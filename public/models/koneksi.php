@@ -6,14 +6,15 @@ class My_db {
     }
     public function open_connection() {
       
-		//$server ="(LOCAL)";
+		
         $db ="um_db";
 		$server="DESKTOP-1CEB0AJ\SQLEXPRESS";	
+        //$server ="(LOCAL)";
         $user ="sa";
         $pass ="";
         $dsn = 'Driver={SQL Server};Server='.$server.';Database='. $db;
 
-	$connection = odbc_connect($dsn,$user,$pass);  
+	    $connection = odbc_connect($dsn,$user,$pass);  
 
 
 		return $connection;

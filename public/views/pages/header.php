@@ -7,7 +7,7 @@
         $class = $_SESSION['classku'];
         
         if($user_log==""){
-            header('Location: /upload_video');
+            header('Location: /monitoring_sosmed');
         }
 ?>
 
