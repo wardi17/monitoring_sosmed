@@ -3,7 +3,59 @@
 <?php require_once ("models/master_target/get_kategory.php");
 
   ?>
+<style>
+     .error {
+      color: red;
+    }
 
+      .ldBar path.mainline {
+        stroke-width: 10;
+        stroke: #09f;
+        stroke-linecap: round;
+      }
+      .ldBar path.baseline {
+        stroke-width: 14;
+        stroke: #f1f2f3;
+        stroke-linecap: round;
+        filter:url(#custom-shadow);
+      }
+
+      .loading-spinner{
+      width:30px;
+      height:30px;
+      border:2px solid indigo;
+      border-radius:50%;
+      border-top-color:#0001;
+      display:inline-block;
+      animation:loadingspinner .7s linear infinite;
+    }
+
+
+    @keyframes loadingspinner{
+      0%{
+        transform:rotate(0deg)
+      }
+      100%{
+        transform:rotate(360deg)
+      }
+    }
+    #progressBar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            display: none;
+        }
+
+     #progressBar div {
+            height: 20px;
+            width: 0%;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            border-radius: 5px;
+        }
+</style>
 <div class ="col-md-12 col-12">
   <div class="card">
     <di class="card-header">
@@ -11,12 +63,13 @@
     </di>
     <div class="card-content">
       <div class="card-body">
+        <div id="progressBar"><div>0%</div></div>
+        <p id="status"></p>
       <form  id ="formtambah" class ="form form-horizontal">
                 <div class ="row col-md-12 mb-2">
                   <label class="col-sm-3 col-form-label" >Divisi</label>
-                    <div id="divisi" class ="col-md-2">
-                      
-                    </div>
+                    <div id="divisi" class ="col-md-2"></div>
+                       <span id="divisiError" class="error"></span>
                   </div>
                 <div class =" row col-md-12 mb-3">
                 <label for="tanggal" class="col-sm-3 col-form-label" >Tanggal Upload</label>
@@ -31,6 +84,7 @@
                         <div class ="row col-md-12 mb-2">
                         <label for="uplod" class="col-sm-3 col-form-label" >Kategori</label>
                         <div  id="kategori" class ="col-md-9"></div>
+                         <span id="kategoriError" class="error"></span>
                      </div>
                    
                       <div class="row col-md-12 mb-2">
@@ -38,12 +92,14 @@
                                 <div class="col-sm-4">
                                 <input type="text"  class="form-control" name ="judul" id="judul" value="" required>
                                 </div>
+                              <span id="judulError" class="error"></span>
                         </div>
                         <div class="row col-md-12 mb-2">
                                 <label for="kode" class="col-sm-3 col-form-label">Kode</label>
                                 <div class="col-sm-4">
                                 <input type="text"  class="form-control" name ="kode" id="kode" value="" required>
                                 </div>
+                             <span id="kodeError" class="error"></span>
                         </div>
                       <div class="row col-md-12 mb-2">
                                 <label for="tujuan" class="col-sm-3 col-form-label">Tujuan</label>
@@ -51,11 +107,20 @@
                                 <textarea  class="form-control" name ="tujuan" id="tujuan" value="" required></textarea>
                                 </div>
                         </div>
-                      <div class="row col-md-12 mb-2">
+                           <div class="row mb-12 mb-2">
+                                        <label for="videoUpload" class="col-sm-3 col-form-label">Upload Video (MP4):</label>
+                                        <div  class="col-sm-4">
+                                          <input  type="file"  id="videoUpload"  accept="video/mp4" required class="form-control">
+                                        </div>
+                                        <span id="videoUploadError" class="error"></span>
+                            </div>
+                           <div class="row col-md-12 mb-2">
                                 <label for="link" class="col-sm-3 col-form-label">Link_url</label>
                                 <div class="col-sm-4">
                                   <input type="url"  class="form-control" name ="link" id="link" value="" required>
-                                </div></div>
+                                </div>
+                               <span id="linkError" class="error"></span>
+                              </div>
                         <div class="row col-md-12">  
                                 <label for="ket" class="col-sm-3 col-form-label">Keterangan</label>
                                 <div class="col-sm-4">
@@ -75,6 +140,28 @@
 
 <script>
 $(document).ready(function(){
+
+    //upadet terbaru  2025
+       document.getElementById("videoUpload").addEventListener("change", function () {
+        let file = this.files[0]; // Ambil file yang dipilih
+        let errorMessage = document.getElementById("videoUploadError");
+
+        if (file) {
+            let fileType = file.type; // Ambil tipe file
+            if (fileType !== "video/mp4") {
+                errorMessage.textContent = "Hanya file MP4 yang diperbolehkan!";
+                this.value = ""; // Reset input file
+            } else {
+                errorMessage.textContent = ""; // Hapus pesan error jika valid
+            }
+        }
+      });
+
+
+        ValidasiInputan();
+    // and
+
+
   var d = new Date();
   var month = d.getMonth()+1;
   var day = d.getDate();
@@ -104,32 +191,166 @@ $(document).ready(function(){
     let kode = $("#kode").val();
  
     let tujuan = $("#tujuan").val();
+    let videoUpload = $("#videoUpload")[0].files[0];
     let link = $("#link").val();
     let ket = $("#ket").val();
 
- 
-    
+     // Reset pesan error
+    $("#divisiError, #kategoriError, #judulError,#videoUploadError, #linkError").text("");
+  
+    // Validasi input kosong
+    let isValid = true;
+    if(!divisi){
+       $("#divisiError").text("divisi harus di pilih");
+       isValid = false;
+    }
 
-    $.ajax({
+    if(!kategori){
+      $("#kategoriError").text("kategori harus di pilih");
+       isValid = false;
+    }
+
+    if(!kode){
+      $("#kodeError").text("kode harus di isi dulu !!!");
+       isValid = false;
+    }
+
+    if (!videoUpload) {
+        $("#videoUploadError").text("Harap pilih file sebelum menyimpan.");
+        isValid = false;
+    }
+
+   if(!link){
+      $("#linkError").text("link harus di isi dulu !!!");
+       isValid = false;
+    }
+
+    if(!isValid) return;
+
+       // Validasi ukuran file (maksimal 2GB)
+    let maxSize = 2 * 1024 * 1024 * 1024; // 2GB
+    if (videoUpload.size > maxSize) {
+        Swal.fire({
+            icon: "error",
+            title: "File terlalu besar!",
+            text: "Maksimal file yang diperbolehkan adalah 2GB.",
+            confirmButtonText: "OK"
+        });
+        return;
+    }
+
+
+    // Buat objek FormData
+    let formData = new FormData();
+    formData.append("tanggal", tanggal);
+    formData.append("divisi", divisi);
+    formData.append("kategori", kategori);
+    formData.append("judul", judul);
+    formData.append("kode", kode);
+    formData.append("tujuan", tujuan);
+    formData.append("link", link);
+    formData.append("ket", ket);
+    formData.append("file", videoUpload);
+
+    saveData(formData);
+    
+  })
+
+  });
+  $( function() {
+        $( "#tanggal" ).datepicker(
+          {dateFormat : 'dd/mm/yy'}
+        );
+     
+  });
+
+  //fungsi baru 2025
+      function ValidasiInputan(){
+            $("#divisi").blur(function() {
+            let email = $(this).val();
+            if (email === "") {
+              $("#divisiError").text("divisi harus di pilih");
+            } else {
+              $("#divisiError").text("");
+            }
+            });
+
+            $("#kategori").blur(function() {
+            let email = $(this).val();
+            if (email === "") {
+              $("#kategoriError").text("kategori harus di pilih");
+            } else {
+              $("#kategoriError").text("");
+            }
+            });
+
+            $("#kode").blur(function() {
+            let email = $(this).val();
+            if (email === "") {
+              $("#kodeError").text("kode harus di isi dulu !!!");
+            } else {
+              $("#kodeError").text("");
+            }
+            });
+
+              $("#videoUpload").on("change", function() {
+              let file = this.files[0];
+              let maxSize = 2 * 1024 * 1024 * 1024; // 2GB
+              let errorMessage = document.getElementById("videoUploadError");
+
+              if (file && file.size > maxSize) {
+                errorMessage.textContent="Ukuran file terlalu besar! Maksimal 2GB";
+                  this.value = ""; // Reset input file
+              }else{
+                errorMessage.textContent ="";
+              }
+          });
+
+
+             $("#link").blur(function() {
+            let email = $(this).val();
+            if (email === "") {
+              $("#linkError").text("link harus di isi dulu !!!");
+            } else {
+              $("#linkError").text("");
+            }
+            });
+
+      }
+
+
+
+   saveData=(datas)=>{
+    $("#status").text("Uploading...");
+   $("#Createdata").prop("disabled", true).text("Uploading...");
+      $.ajax({
       url:'models/upload_transaksi/tambahdata.php',
       method:'POST',
-       data:{tanggal:tanggal,divisi:divisi,kategori:kategori,judul:judul,kode:kode,tujuan:tujuan,link:link,ket:ket},
-       cache:true,
-       dataType:'json',
-      //  beforeSend :function(){
-      //         Swal.fire({
-      //           title: 'Loading Save...',
-      //           html: 'Please wait...',
-      //           allowEscapeKey: false,
-      //           allowOutsideClick: false,
-      //           didOpen: () => {
-      //             Swal.showLoading()
-      //         }
-      //           });
-      //       },
+       data:datas,
+       processData: false, // Tambahkan ini agar FormData tidak diproses sebagai string
+        contentType: false, // Tambahkan ini agar FormData dikirim dengan header yang benar
+            xhr: function() {
+                        let xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener("progress", function(e) {
+                            if (e.lengthComputable) {
+                                let percent = Math.round((e.loaded / e.total) * 100);
+                                let progressBar = $("#progressBar div");
+
+                                // Set warna berdasarkan progress
+                                let color = percent < 30 ? "#FF5733" : percent < 70 ? "#FFC300" : "#4CAF50";
+                                progressBar.css({"width": percent + "%", "background-color": color}).text(percent + "%");
+                            }
+                        }, false);
+                        return xhr;
+                    },
+
        success:function(result){
         let nilai = result.nilai;
         let status = result.error;
+         $("#progressBar").hide();
+
+  
+         $("#Createdata").prop("disabled", false).text("Save");
           if(nilai === 1){
             $("#formtambah").trigger("reset");
                      Swal.fire({         
@@ -151,18 +372,22 @@ $(document).ready(function(){
                           }); 
 
           }
-       }
+       },
+      error: function (xhr, status, error) {
+              Swal.fire({
+                    position: 'top-center',
+                    icon: 'error',
+                    title: 'Terjadi kesalahan!',
+                    text:"Gagal simpan data !! 400",
+                    showConfirmButton: true
+                });
+              //$("#status").text("Terjadi kesalahan dalam upload.");
+              $("#progressBar").hide();
+              $("#Createdata").show();
+            }
     })
-  })
-
-  });
-  $( function() {
-        $( "#tanggal" ).datepicker(
-          {dateFormat : 'dd/mm/yy'}
-        );
-     
-  });
-
+   }   
+  //and fungsi baru 2025
   
   // UNTUK MENAMILKAN DATA DIVISI
 function get_data_divisi(){

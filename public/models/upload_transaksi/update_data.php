@@ -18,7 +18,7 @@ if (!empty($_POST["kode"])) {
     $kode = test_input($_POST["kode"]);
 
    
-    $query="SELECT* FROM transaksi_video_upload WHERE kode ='".$kode."'
+    $query="SELECT kode,divisi,tanggal,kategory,judul,tujuan,link,ket,nama_document FROM transaksi_video_upload WHERE kode ='".$kode."'
     "; 
     $result_set =odbc_exec($connection,$query);
 while(odbc_fetch_row($result_set)){
@@ -33,6 +33,7 @@ while(odbc_fetch_row($result_set)){
       "tujuan"=>rtrim(odbc_result($result_set,'tujuan')),
       "link"=>rtrim(odbc_result($result_set,'link')),
       "ket"=>rtrim(odbc_result($result_set,'ket')),
+      "nama_document"=>rtrim(odbc_result($result_set,'nama_document')),
     );
   
   

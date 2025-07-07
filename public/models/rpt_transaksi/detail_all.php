@@ -35,7 +35,10 @@ elseif($divisi == "PD3R"){
         "kode"=>rtrim(odbc_result($result2,'kode')),
         "judul"=>rtrim(odbc_result($result2,'judul')),
         "tujuan"=>rtrim(odbc_result($result2,'tujuan')),
-        "link"=>rtrim(odbc_result($result2,'link'))
+        "link"=>rtrim(odbc_result($result2,'link')),
+        "nama_document"=>rtrim(odbc_result($result2,'nama_document')),
+        "ukuran_file"=>number_format(rtrim(odbc_result($result2,'ukuran_file')),2,",",",")." ". rtrim(odbc_result($result2,'size_type')),
+        "type_file"=>rtrim(odbc_result($result2,'type_file')),
       ];
     
     }

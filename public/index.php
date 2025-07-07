@@ -1,7 +1,7 @@
-
-
-<?php require 'views/pages/header.php'; ?>
-<?php date_default_timezone_set('Asia/Jakarta');?>
+<?php 
+require 'config.php'; // Tambahkan baris ini paling atas
+require 'views/pages/header.php'; 
+?>
 <body>
     <?php require 'views/pages/sidebar.php'; ?>
     <!-- END NAVBAR -->
@@ -13,8 +13,5 @@
     <!-- FOOTER -->
     <?php require 'views/pages/footer.php' ?>
     <!-- END FOOTER -->
-
-
-  
 </body>
 </html>

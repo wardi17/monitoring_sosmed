@@ -173,35 +173,30 @@
                   <textarea class="form-control" name="tujuan" id="tujuan" required></textarea>
                 </div>
               </div>
-                <div class="row mb-2">
-                  <label class="col-sm-3 col-form-label">Upload Video (MP4):</label>
-                  <div class="col-sm-4">
-                    <!-- input file disembunyikan -->
-                    <input type="file" id="videoUpload" accept="video/mp4" style="display: none;" required>
 
-                    <!-- tombol trigger upload -->
-                    <button type="button" id="uploadBtn" class="btn btn-primary">Pilih Video</button>
-
-                    <!-- nama file -->
-                    <div id="videoFileName" class="mt-2 text-muted"></div>
-
-                    <!-- tombol hapus -->
-                    <button type="button" id="removeBtn" class="btn btn-danger mt-2" style="display: none;">Hapus Video</button>
-
-                    <!-- error -->
-                    <div id="videoUploadError" class="text-danger mt-2"></div>
-                  </div>
+              <div class="row mb-2">
+              <label class="col-sm-3 col-form-label">Upload Video (MP4):</label>
+              <div class="col-sm-4">
+                <!-- input file disembunyikan -->
+                <input type="file" id="videoUpload" accept="video/mp4" style="display: none;" required>
+                <!-- tombol trigger upload -->
+                <button type="button" id="uploadBtn" class="btn btn-primary mt-2">Pilih Video</button>
+                  <!-- nama file tampil di sini -->
+                  <div id="videoFileName" class="mt-2 text-muted"></div>
+                  <!-- tombol hapus -->
+                  <button type="button" id="removeBtn" class="btn btn-danger mt-2" style="display: none;">Hapus Video</button>
                 </div>
-
-                <!-- preview video -->
-                <div class="row mb-2">
-                  <label class="col-sm-3 col-form-label">Preview Video:</label>
-                  <div class="col-sm-4">
-                    <video id="videoPreview" width="320" height="240" controls style="display: none;"></video>
-                  </div>
+                <span id="videoUploadError" class="error"></span>
+              </div>
+              <!-- preview video -->
+              <div class="row mb-2">
+                <label class="col-sm-3 col-form-label">Preview Video:</label>
+                <div class="col-sm-4">
+                  <video id="videoPreview" width="320" height="240" controls style="display: none;"></video>
                 </div>
+              </div>
 
-              
+
               <!-- Link -->
               <div class="row col-md-12 mb-2">
                 <label class="col-sm-3 col-form-label">Link URL</label>
@@ -238,7 +233,6 @@
 <script>
 $(document).ready(function(){
 
-  document.getElementById('videoUpload').style.display = 'none';
 // Klik tombol akan memicu klik input file
 document.getElementById('uploadBtn').addEventListener('click', function () {
   document.getElementById('videoUpload').click();

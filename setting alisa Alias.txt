@@ -1,0 +1,11 @@
+tambahkan lokasi ini di  F:\xampp\apache\conf\extra\httpd-xampp.conf
+
+
+
+Alias /UploadVideoSOSMED "C:/UploadVideoSOSMED"
+
+<Directory "C:/UploadVideoSOSMED">
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+</Directory>
