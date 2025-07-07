@@ -30,7 +30,7 @@ Aplikasi ini digunakan untuk **monitoring sosial media**, dibangun dengan kombin
 
 1. Clone atau download project ini ke folder `htdocs`:
    ```bash
-   git clone https://github.com/username/repo-monitoring-sosmed.git
+   git clone https://github.com/wardi17/monitoring_sosmed.git
 2.Buat database baru di SQL Server dengan nama:
 
 um_db
