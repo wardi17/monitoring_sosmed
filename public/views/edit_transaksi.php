@@ -49,12 +49,144 @@
     text-align: center;
     line-height: 20px;
     color: white;
-    border-radius: 5px;
+    border-radius: 5px ;
   }
+  .hidden {
+  display: none !important;
+}
+
+
+/* Video Styling */
+#video2 {
+    width: 100px !important;
+    height: 100px !important;
+    cursor: pointer;
+    transition: 0.3s;
+    object-fit: cover;
+    display: block;
+}
+
+video:hover {
+    transform: scale(1.1);
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height:100%;
+    max-width: 800px;
+    background: black;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+.modal video {
+    width: 100%;
+    height: 100%;
+    max-height: 80vh;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Overlay Styling */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+
+.overlay.show {
+    display: block;
+}
+
+/* Modal Content Styling */
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: black;
+    padding: 10px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    text-align: center;
+}
+
+/* Close Button Styling */
+.close {
+    float: right;
+    top: 20px;
+    right: 15px;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+    text-shadow: 0px 0px 10px rgba(248, 241, 241, 0.7);
+}
+
+.close:hover {
+    color: red;
+    text-shadow: 0px 0px 10px rgba(255, 0, 0, 0.7);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+    }
+    .modal video {
+        max-height: 70vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        width: 100%;
+        border-radius: 0;
+    }
+    .modal video {
+        max-height: 65vh;
+    }
+}
+
 </style>
 
 <!-- Main Layout -->
 <div id="main">
+      <!-- Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <div>
+            <span class="close" onclick="closeModal()">&times;</span> 
+            </div>
+            <div class="modal-body">
+                <video id="modalVideo" controls>
+                        <source id="modalSource" src="" type="video/mp4">
+                    </video>
+            </div>
+                <!-- <span class="close" onclick="closeModal()">&times;</span> -->
+            </div>
+      </div>
   <?php include 'views/pages/burger.php'; ?>
   <div id="header_data"></div>
 
@@ -119,6 +251,8 @@
   </div>
 </div>
 
+
+
 <!-- Edit Form -->
 <div id="formdata_edit">
   <div id="main">
@@ -130,7 +264,7 @@
 
         <div class="card-content">
           <div class="card-body">
-            <button onclick="goBack()" class="btn btn-lg mb-4"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="goBack()" id="close1" class="btn btn-lg mb-4"><i class="fa-solid fa-arrow-left"></i></button>
 
             <div id="progressBar"><div>0%</div></div>
             <p id="status"></p>
@@ -139,6 +273,7 @@
               <div class="row col-md-12 mb-2">
                 <label class="col-sm-3 col-form-label">Divisi</label>
                 <div id="divisi" class="col-md-2"></div>
+                <span id="divisiError" class="error"></span>
               </div>
 
               <div class="row col-md-12 mb-3">
@@ -151,6 +286,7 @@
               <div class="row col-md-12 mb-2">
                 <label class="col-sm-3 col-form-label">Kategori</label>
                 <div id="kategori" class="col-md-9"></div>
+                <span id="kategoriError" class="error"></span>
               </div>
 
               <div class="row col-md-12 mb-2">
@@ -158,6 +294,7 @@
                 <div class="col-sm-4">
                   <input type="text" class="form-control" name="judul" id="judul" required>
                 </div>
+                 <span id="judulError" class="error"></span>
               </div>
 
               <div class="row col-md-12 mb-2">
@@ -172,13 +309,14 @@
                 <div class="col-sm-4">
                   <textarea class="form-control" name="tujuan" id="tujuan" required></textarea>
                 </div>
+                 <span id="kodeError" class="error"></span>
               </div>
                 <div class="row mb-2">
                   <label class="col-sm-3 col-form-label">Upload Video (MP4):</label>
                   <div class="col-sm-4">
                     <!-- input file disembunyikan -->
-                    <input type="file" id="videoUpload" accept="video/mp4" style="display: none;" required>
-
+                    <input type="file" id="videoUpload" class="hidden" accept="video/mp4" required>
+                    <input type="hidden" id="document_file"/>
                     <!-- tombol trigger upload -->
                     <button type="button" id="uploadBtn" class="btn btn-primary">Pilih Video</button>
 
@@ -187,7 +325,6 @@
 
                     <!-- tombol hapus -->
                     <button type="button" id="removeBtn" class="btn btn-danger mt-2" style="display: none;">Hapus Video</button>
-
                     <!-- error -->
                     <div id="videoUploadError" class="text-danger mt-2"></div>
                   </div>
@@ -208,6 +345,7 @@
                 <div class="col-sm-4">
                   <input type="url" class="form-control" name="link" id="link" required>
                 </div>
+                 <span id="linkError" class="error"></span>
               </div>
 
               <!-- Keterangan -->
@@ -222,7 +360,7 @@
               <div class="col-sm-11 d-flex justify-content-end mt-3">
                 <button type="submit" class="btn btn-primary me-1 mb-3" id="Save_edit">Save</button>
                 <button type="button" class="btn btn-danger me-1 mb-3" id="Deletedata">Delete</button>
-                <button type="button" class="btn btn-secondary me-1 mb-3" onclick="goBack()">Close</button>
+                <button type="button" class="btn btn-secondary me-1 mb-3" id="close" onclick="goBack()">Close</button>
               </div>
             </form>
 
@@ -276,6 +414,7 @@ document.getElementById('removeBtn').addEventListener('click', function () {
   document.getElementById('uploadBtn').style.display = 'inline-block';
 });
 
+ValidasiInputan();
 
 
 
@@ -296,12 +435,22 @@ document.getElementById('removeBtn').addEventListener('click', function () {
     $("#Deletedata").on("click",function(e){
         e.preventDefault();
         let kode = $("#kode").val();
-      
+        let nama_document = $("#document_file").val();
+         let divisi = $("input[type=radio][name=divisi]:checked").val();
+        let kategori = $("input[type=radio][name=kategori]:checked").val();
+
+        const datas ={
+          "kode" :kode,
+          "nama_document":nama_document,
+           "divisi":divisi,
+           "kategori":kategori
+        }
+
         $.ajax({
             url:"models/upload_transaksi/delete_data.php",
             type:"POST",
-            data:{kode:kode},
-                dataType:'json',                  
+            data:datas,
+            dataType:'json',                  
             success: function(result){ 
           
                   Swal.fire({         
@@ -344,7 +493,7 @@ $(document).on("click", ".open-edit", function() {
                 let link = value.link;
                 let tujuan = value.tujuan;
                 let nama_document = value.nama_document;
-
+                let nama_document1 = value.nama_document;
                 // Set checked state for category
                 if (kategory !== '') {
                     let ktg = "#" + kategory;
@@ -365,6 +514,9 @@ $(document).on("click", ".open-edit", function() {
                 $("#link").val(link);
                 $("#ket").val(ket);
 
+
+         
+                $("#document_file").val(nama_document1);
                 // Check if video document exists
                 if (nama_document) {
                     // Set video preview
@@ -403,8 +555,7 @@ $(document).on("click", ".open-edit", function() {
             });
         }
     });
-});
-// End data edit
+
 
 
    
@@ -412,7 +563,7 @@ $(document).on("click", ".open-edit", function() {
   $("#Save_edit").on('click',function(e){
     e.preventDefault();
     let divisi = $("input[type=radio][name=divisi]:checked").val();
-    let kategory = $("input[type=radio][name=kategori]:checked").val();
+    let kategori = $("input[type=radio][name=kategori]:checked").val();
     let kode = $("#kode").val();
     let tgl = $('#tanggal').val();
     let tanggal = myformat(tgl);
@@ -421,30 +572,187 @@ $(document).on("click", ".open-edit", function() {
     let tujuan = $('#tujuan').val();
     let link = $("#link").val();
     let ket = $("#ket").val();
-    $.ajax({
-      url:'models/upload_transaksi/edit_data_transaksi.php',
-      method:'POST',
-       data:{kode:kode,kategory:kategory,divisi:divisi,tanggal:tanggal,judul:judul,tujuan:tujuan,link:link,ket:ket},
-       cache:true,
-       dataType:'json',
-       success:function(result){
-        let status = result.error;
-        Swal.fire({
-                position: 'top-center',
-              icon: 'success',
-              title: status,
-              }).then(function(){
-                location.reload();
-              }); 
-          
-       }
-    })
+    let videoUpload = $("#videoUpload")[0].files[0];
+       // Reset pesan error
+    $("#divisiError, #kategoriError, #judulError,#videoUploadError, #linkError").text("");
+  
+    // Validasi input kosong
+    let isValid = true;
+    if(!divisi){
+       $("#divisiError").text("divisi harus di pilih");
+       isValid = false;
+    }
+
+    if(!kategori){
+      $("#kategoriError").text("kategori harus di pilih");
+       isValid = false;
+    }
+
+    if(!kode){
+      $("#kodeError").text("kode harus di isi dulu !!!");
+       isValid = false;
+    }
+
+ 
+   if(!link){
+      $("#linkError").text("link harus di isi dulu !!!");
+       isValid = false;
+    }
+
+    if(!isValid) return;
+
+    if(videoUpload !==undefined){
+     // Validasi ukuran file (maksimal 2GB)
+      let maxSize = 2 * 1024 * 1024 * 1024; // 2GB
+      if (videoUpload.size > maxSize) {
+          Swal.fire({
+              icon: "error",
+              title: "File terlalu besar!",
+              text: "Maksimal file yang diperbolehkan adalah 2GB.",
+              confirmButtonText: "OK"
+          });
+          return;
+      }
+    }
+  
+
+      // Buat objek FormData
+    let formData = new FormData();
+    formData.append("tanggal", tanggal);
+    formData.append("divisi", divisi);
+    formData.append("kategori", kategori);
+    formData.append("judul", judul);
+    formData.append("kode", kode);
+    formData.append("tujuan", tujuan);
+    formData.append("link", link);
+    formData.append("ket", ket);
+    formData.append("file", videoUpload);
+    
+
+     UpdateData(formData);
+
   });
-  //end simpan edit data
+  
 
+  }); //end simpan edit data
 });
+//batas document ready
+
+//fungsi baru 2025
+      function ValidasiInputan(){
+            $("#divisi").blur(function() {
+            let email = $(this).val();
+            if (email === "") {
+              $("#divisiError").text("divisi harus di pilih");
+            } else {
+              $("#divisiError").text("");
+            }
+            });
+
+            $("#kategori").blur(function() {
+            let email = $(this).val();
+            if (email === "") {
+              $("#kategoriError").text("kategori harus di pilih");
+            } else {
+              $("#kategoriError").text("");
+            }
+            });
+
+            $("#kode").blur(function() {
+            let email = $(this).val();
+            if (email === "") {
+              $("#kodeError").text("kode harus di isi dulu !!!");
+            } else {
+              $("#kodeError").text("");
+            }
+            });
+
+              $("#videoUpload").on("change", function() {
+              let file = this.files[0];
+              let maxSize = 2 * 1024 * 1024 * 1024; // 2GB
+              let errorMessage = document.getElementById("videoUploadError");
+
+              if (file && file.size > maxSize) {
+                errorMessage.textContent="Ukuran file terlalu besar! Maksimal 2GB";
+                  this.value = ""; // Reset input file
+              }else{
+                errorMessage.textContent ="";
+              }
+          });
 
 
+             $("#link").blur(function() {
+            let email = $(this).val();
+            if (email === "") {
+              $("#linkError").text("link harus di isi dulu !!!");
+            } else {
+              $("#linkError").text("");
+            }
+            });
+
+      }
+
+
+    UpdateData =(datas)=>{
+       $("#progressBar").show();
+       $("#status").text("Uploading...");
+       $("#Deletedata").hide();
+       $("#close").hide();
+       $("#close1").hide();
+      $("#Save_edit").prop("disabled", true).text("Uploading...");
+          $.ajax({
+          url:'models/upload_transaksi/edit_data_transaksi.php',
+          method:'POST',
+          data:datas,
+          processData: false, // Tambahkan ini agar FormData tidak diproses sebagai string
+        contentType: false, // Tambahkan ini agar FormData dikirim dengan header yang benar
+            xhr: function() {
+                        let xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener("progress", function(e) {
+                            if (e.lengthComputable) {
+                                let percent = Math.round((e.loaded / e.total) * 100);
+                                let progressBar = $("#progressBar div");
+
+                                // Set warna berdasarkan progress
+                                let color = percent < 30 ? "#FF5733" : percent < 70 ? "#FFC300" : "#4CAF50";
+                                progressBar.css({"width": percent + "%", "background-color": color}).text(percent + "%");
+                            }
+                        }, false);
+                        return xhr;
+                    },
+          success:function(result){
+            let status = result.error;
+           $("#progressBar").hide();
+           $("#Save_edit").prop("disabled", false).text("Save");
+             $("#Deletedata").show();
+            $("#close").show();
+            $("#close1").show();
+            Swal.fire({
+                    position: 'top-center',
+                  icon: 'success',
+                  title: status,
+                  }).then(function(){
+                    location.reload();
+                  }); 
+              
+          },
+              error: function (xhr, status, error) {
+              Swal.fire({
+                    position: 'top-center',
+                    icon: 'error',
+                    title: 'Terjadi kesalahan!',
+                    text:"Gagal simpan data !! 400",
+                    showConfirmButton: true
+                });
+              //$("#status").text("Terjadi kesalahan dalam upload.");
+              $("#progressBar").hide();
+              $("#Save_edit").show();
+               $("#Deletedata").show();
+                $("#close").show();
+                $("#close1").show()
+            }
+        })
+    }
   
 
 function tahun_edit(){
@@ -509,13 +817,17 @@ function get_tables(){
                     <table id="tabel1" class='display table-info' style='width:100%'>                    
                                     <thead  id='thead'class ='thead'>
                                     <tr>
-                                                <th style="width:7%">Tanggal</th>
+                                                <th style="width:8%">Tanggal</th>
                                                 <th style="width:2%">Kode</th>
                                                 <th style="width:2%">Kategori</th>
                                                 <th style="width:2%">Divisi</th>
                                                 <th style="width:15%">Judul</th>
                                                 <th style="width:15%">Tujuan</th>
                                                 <th style="width:15%">Ket</th>
+                                                <th style="width:10%">Nama File</th>
+                                                <th style="width:10%">Size</th>
+                                                <th style="width:10%">Play</th>
+
                                                 <th style="width:1%"><p class="text-center">Action &nbsp &nbsp</p></th>  
                                     </tr>
                                     </thead>
@@ -568,7 +880,23 @@ function showdata(years){
                                 { 'data': 'judul' },
                                 { 'data': 'tujuan' },
                                 { 'data': 'ket' },
+                                {'data' :'nama_document'},
+                                {'data' :'ukuran_file'},
+                                                      {
+                                                data: function(row, type, val, meta) {
 
+                                                    const nama_document = row.nama_document;
+                                                    const url = "<?= url_store ?>"+nama_document;
+
+                                                
+                                                    return `
+                                                    <video id="video2" width="200" onclick="openModal('${url}')">
+                                                        <source src="${url}" type="video/mp4">
+                                                        Browser Anda tidak mendukung tag video.
+                                                    </video>
+                                                    `;
+                                                }
+                                                },
                                 { "render": function ( data, type,row) { // Tampilkan kolom aksi
                                   let html  =`<button type="button"   data-id="${row.kode}" class=" open-edit btn btn-lg btn-space"><i class="fa-regular fa-pen-to-square"></i></button>`
 
@@ -660,4 +988,22 @@ function myformat(date){
         );
      
   });
+
+  function openModal(videoSrc) {
+            let modal = document.getElementById("videoModal");
+            let modalVideo = document.getElementById("modalVideo");
+            let modalSource = document.getElementById("modalSource");
+
+            modalSource.src = videoSrc; // Set video src
+            modalVideo.load(); // Reload video untuk memuat source baru
+            modal.style.display = "block";
+            modalVideo.play(); // Putar video otomatis
+        }
+    function closeModal() {
+            let modalVideo = document.getElementById("modalVideo");
+           
+            modalVideo.pause(); // Pause video saat modal ditutup
+            modalVideo.currentTime = 0;  
+            $("#videoModal").fadeOut();
+        }
 </script>

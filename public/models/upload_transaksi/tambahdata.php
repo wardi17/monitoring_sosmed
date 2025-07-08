@@ -32,7 +32,7 @@ $username =$user_log;
   $ket = test_input($_POST["ket"]);
  
  //cek transaksi tidak boleh sama
- $query = "SELECT DISTINCT * FROM transaksi_video_upload where kode ='$kode' AND kategory='{$kategory}' AND divisi='{$divisi}' ";
+ $query = "SELECT DISTINCT * FROM transaksi_video_upload where kode ='{$kode}' AND kategory='{$kategory}' AND divisi='{$divisi}' ";
 
  $sql=odbc_exec($connection,$query);
  $rows= odbc_fetch_array($sql); 

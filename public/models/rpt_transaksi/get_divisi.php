@@ -24,8 +24,8 @@
 
 if(!empty($rowas)){
 
-if(($divisi == "All")){
 
+if(($divisi == "All")){
   $sql =" SELECT DISTINCT kategory FROM master_video WHERE  tahun='".$tahun."'";
   //AND angka_bulan <='".$bulan_k."'" ;
   
@@ -85,6 +85,7 @@ $array_merge = array_merge(
         $kategory[] = $arr['kategory'];
   };
 
+ 
   foreach($kategory as  $ktg){
       if($ktg =="Facebook"){
        
@@ -123,56 +124,15 @@ $array_merge = array_merge(
     json_decode($row4, true), 
     json_decode($row5, true)
 );
+
+
     echo json_encode($array_merge);
 
 
+
 }
-// elseif(($divisi == "PD3R")){
 
-//   $sql =" SELECT DISTINCT kategory FROM master_video WHERE  tahun='".$tahun."' AND angka_bulan <='".$bulan_k."'" ;
-//   $result = odbc_exec($conn,$sql);
-//   while($arr = odbc_fetch_array($result)){
-//         $kategory[] = $arr['kategory'];
-//   };
-
-//   foreach($kategory as  $ktg){
-//       if($ktg =="Facebook"){
-       
-//         $get_data = get_data_cs($conn,$tahun,$ktg,$divisi,$bulan_k);
-//         //$get_data = get_data($conn,$tahun,$bulan_k,$ktg);
-//         $rowdata[] = $get_data;
-//       }
-//       if($ktg =="Youtube"){
-//         $get_data = get_data_cs($conn,$tahun,$ktg,$divisi,$bulan_k);
-//         $rowdata2[] = $get_data;
-//       }
-//       if($ktg =="Instagram"){
-//         $get_data = get_data_cs($conn,$tahun,$ktg,$divisi,$bulan_k);
-//         $rowdata3[] = $get_data;
-//       }
-//       if($ktg =="TikTok"){
-//         $get_data = get_data_cs($conn,$tahun,$ktg,$divisi,$bulan_k);
-//         $rowdata4[] = $get_data;
-//       }
-//       if($ktg =="Twitter"){
-//         $get_data = get_data_cs($conn,$tahun,$ktg,$divisi,$bulan_k);
-//         $rowdata5[] = $get_data;
-//       }
-
-//   } 
-//   $row =json_encode($rowdata[0]);
-//   $row2 =json_encode($rowdata2[0]);
-//   $row3 =json_encode($rowdata3[0]);
-//   $row4 =json_encode($rowdata4[0]);
-//   $row5 =json_encode($rowdata5[0]);
-//     $array_merge= array_merge(
-//       json_decode($row,true),json_decode($row2,true),json_decode($row3,true),
-//       json_decode($row4,true),json_decode($row5,true)
-//     );
-//     $array_merge;
-//     echo json_encode($array_merge);
       
-// }
 
 
 }else{
@@ -186,23 +146,25 @@ function get_data_cs($connection,$tahun,$ktg,$divisi,$bulan_k){
   $sql =" SELECT SUM(target) as target_jml FROM master_video WHERE tahun ='".$tahun."' AND kategory='".$ktg."' AND divisi='".$divisi."' ";
   $result = odbc_exec($connection,$sql);
   $arr = odbc_fetch_array($result); 
-  $target_jml = $arr['target_jml'];
+  $target_jml = isset($arr['target_jml']) ? $arr['target_jml'] : 0;
 
 
 
   $query ="SELECT COUNT(kategory) as kategory_jml FROM transaksi_video_upload WHERE kategory ='".$ktg."' AND YEAR(tanggal)='".$tahun."'AND divisi='".$divisi."' ";
   $result2 = odbc_exec($connection,$query);
   $arr2 = odbc_fetch_array($result2); 
-    $kategory_jml = $arr2['kategory_jml'];
+    $kategory_jml = isset($arr2['kategory_jml']) ? $arr2['kategory_jml'] : 0;
 
   $data [] =[
       'tahun' =>$tahun,
       'kategory'=>$ktg,
       'divisi' =>$divisi,
-      'target'=>$target_jml,
-      'upload'=>$kategory_jml,
-      'tidak_target'=>($kategory_jml - $target_jml),
+      'target'=>(string) $target_jml, 
+      'upload'=>(string) $kategory_jml,
+      'tidak_target'=>(string) ($kategory_jml - $target_jml),
   ];
+
+  //die(var_dump($data));
 return $data ;
 
 }
@@ -213,22 +175,24 @@ function get_data($connection,$tahun,$bulan_k,$ktg,$divisi){
           $sql =" SELECT SUM(target) as target_jml FROM master_video WHERE tahun ='".$tahun."' AND kategory='".$ktg."' ";
           $result = odbc_exec($connection,$sql);
           $arr = odbc_fetch_array($result); 
-          $target_jml = $arr['target_jml'];
+          $target_jml = isset($arr['target_jml']) ? $arr['target_jml'] : 0;
         
 
           $query ="SELECT COUNT(kategory) as kategory_jml FROM transaksi_video_upload WHERE kategory ='".$ktg."' AND YEAR(tanggal)='".$tahun."' ";
           $result2 = odbc_exec($connection,$query);
           $arr2 = odbc_fetch_array($result2); 
-            $kategory_jml = $arr2['kategory_jml'];
+           $kategory_jml = isset($arr2['kategory_jml']) ? $arr2['kategory_jml'] : 0;
+
        
           $data [] =[
               'tahun' =>$tahun,
               'kategory'=>$ktg,
               'divisi' =>$divisi,
-              'target'=>$target_jml,
-              'upload'=>$kategory_jml,
-              'tidak_target'=>($kategory_jml - $target_jml),
+              'target'=>(string) $target_jml,
+              'upload'=>(string) $kategory_jml,
+              'tidak_target'=>(string)($kategory_jml - $target_jml),
           ];
+           // die(var_dump($data));
         return $data ;
        
   }

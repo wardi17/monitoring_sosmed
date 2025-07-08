@@ -107,13 +107,30 @@
                                 <textarea  class="form-control" name ="tujuan" id="tujuan" value="" required></textarea>
                                 </div>
                         </div>
-                           <div class="row mb-12 mb-2">
-                                        <label for="videoUpload" class="col-sm-3 col-form-label">Upload Video (MP4):</label>
-                                        <div  class="col-sm-4">
-                                          <input  type="file"  id="videoUpload"  accept="video/mp4" required class="form-control">
-                                        </div>
-                                        <span id="videoUploadError" class="error"></span>
+                         <div class="row mb-2">
+                            <label class="col-sm-3 col-form-label">Upload Video (MP4):</label>
+                            <div class="col-sm-4">
+                              <!-- input file disembunyikan -->
+                              <input type="file" id="videoUpload" accept="video/mp4" style="display: none;" required>
+
+                              <!-- tombol trigger upload -->
+                              <button type="button" id="uploadBtn" class="btn btn-primary">Pilih Video</button>
+                              <!-- nama file -->
+                              <div id="videoFileName" class="mt-2 text-muted"></div>
+                              <!-- tombol hapus -->
+                              <button type="button" id="removeBtn" class="btn btn-danger mt-2" style="display: none;">Hapus Video</button>
+                              <!-- error -->
+                              <div id="videoUploadError" class="text-danger mt-2"></div>
                             </div>
+                          </div>
+
+                          <!-- preview video -->
+                          <div class="row mb-2">
+                            <label class="col-sm-3 col-form-label">Preview Video:</label>
+                            <div class="col-sm-4">
+                              <video id="videoPreview" width="320" height="240" controls style="display: none;"></video>
+                            </div>
+                          </div>
                            <div class="row col-md-12 mb-2">
                                 <label for="link" class="col-sm-3 col-form-label">Link_url</label>
                                 <div class="col-sm-4">
@@ -142,20 +159,44 @@
 $(document).ready(function(){
 
     //upadet terbaru  2025
-       document.getElementById("videoUpload").addEventListener("change", function () {
-        let file = this.files[0]; // Ambil file yang dipilih
-        let errorMessage = document.getElementById("videoUploadError");
+          document.getElementById('videoUpload').style.display = 'none';
+          // Klik tombol akan memicu klik input file
+          document.getElementById('uploadBtn').addEventListener('click', function () {
+            document.getElementById('videoUpload').click();
+          });
 
-        if (file) {
-            let fileType = file.type; // Ambil tipe file
-            if (fileType !== "video/mp4") {
-                errorMessage.textContent = "Hanya file MP4 yang diperbolehkan!";
-                this.value = ""; // Reset input file
+          // Saat file dipilih
+          document.getElementById('videoUpload').addEventListener('change', function () {
+            const file = this.files[0];
+            if (file && file.type === 'video/mp4') {
+              const videoURL = URL.createObjectURL(file);
+              document.getElementById('videoPreview').src = videoURL;
+              document.getElementById('videoPreview').style.display = 'block';
+
+              // Tampilkan nama file
+              document.getElementById('videoFileName').textContent = file.name;
+
+              // Tampilkan tombol hapus
+              document.getElementById('removeBtn').style.display = 'inline-block';
+
+              // Sembunyikan tombol pilih
+              document.getElementById('uploadBtn').style.display = 'none';
             } else {
-                errorMessage.textContent = ""; // Hapus pesan error jika valid
+              document.getElementById('videoUploadError').textContent = 'Mohon pilih file video dengan format .mp4';
             }
-        }
-      });
+          });
+
+          // Saat tombol hapus diklik
+          document.getElementById('removeBtn').addEventListener('click', function () {
+            // Reset
+            document.getElementById('videoUpload').value = '';
+            document.getElementById('videoPreview').src = '';
+            document.getElementById('videoPreview').style.display = 'none';
+            document.getElementById('videoFileName').textContent = '';
+            this.style.display = 'none';
+            document.getElementById('uploadBtn').style.display = 'inline-block';
+          });
+
 
 
         ValidasiInputan();
@@ -321,6 +362,7 @@ $(document).ready(function(){
 
 
    saveData=(datas)=>{
+     $("#progressBar").show();
     $("#status").text("Uploading...");
    $("#Createdata").prop("disabled", true).text("Uploading...");
       $.ajax({
@@ -348,8 +390,6 @@ $(document).ready(function(){
         let nilai = result.nilai;
         let status = result.error;
          $("#progressBar").hide();
-
-  
          $("#Createdata").prop("disabled", false).text("Save");
           if(nilai === 1){
             $("#formtambah").trigger("reset");

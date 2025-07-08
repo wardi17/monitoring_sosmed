@@ -193,7 +193,7 @@ video:hover {
 <div id="header_data"></div>
 <!-- <div id="filter"> -->
 
-<div id="tabelhead"></div>
+<!-- <div id="tabelhead"></div> -->
 
 <div id="tabelhead2"></div>
 
@@ -221,7 +221,7 @@ $(document).ready(function(){
     divisi();
     $("#filter_tahun").val(tahun);
    
-    get_divisi_all(tahun,bulan,div);
+   get_divisi_all(tahun,bulan,div);
     get_datagrafik(tahun,div);
     //get_divisi(tahun,bulan,div2);
     get_header(tahun,div);
@@ -236,92 +236,12 @@ $(document).ready(function(){
                 let  div = $('#filter_divisi').find(":selected").val();
                 const dateya = new Date();
                 let bulan = dateya.getMonth()+1;
+
+                get_divisi_all(tahun,bulan,div);
                 get_datagrafik(tahun,div);
-             
-                //if(div =="All"){
-                    // get_tables_detail_all();
-                    get_header(tahun,div);
+                get_header(tahun,div);
 
-                    $("#tbl_detail_all").hide();
-                    $("#tabelhead").show();
-                    $.ajax({
-                            url:'models/rpt_transaksi/get_divisi.php',
-                            method:'POST',
-                            data:{tahun:tahun,bulan:bulan,divisi:div},
-                            dataType:'json',      
-                            success:function(result){
-                            let titles =`<h1 style="text-align:center;color:black;">Data Report Tranksasi ${tahun}</h1>`;
-                            $("#tabel2").DataTable({
-                                responsive:true,
-                                    "ordering": false,
-                                    "destroy":true,
-                                    dom: 'Bfrtip',
-                                    paging:true,
-                                    "searching": true,
-                                    buttons: [
-                                    {extend: 'print',
-                                    className: 'btn btn-sm',
-                                    text: '<h6><i class="fa-solid fa-print fa-lg text-secondary"></i></h6>',
-                                    messageTop: function () {
-                                        return titles ;
-                                    },
-                                    title:" "
-                                    },
-                                    ],
-                                
-                                    "order":[[0,'desc']],
-                                        data: result,
-                                        'rowCallback': function(row, data, index){
-                                            let target = data.target
-                                        
-                                            let tdk_target=data.tidak_target;
-                                        
-                                            if(tdk_target< target){
-                                                $(row).find('td:eq(5)').css('color', 'red');
-                                            }else{
-                                            $(row).find('td:eq(5)').css('color', 'black');
-
-                                            }
-                                    
-                                        },
-                                            columns: [
-                                            
-                                                { 'data': 'tahun',"render":function(data,type,row,metal){
-
-                                                    let div = row.divisi;
-                                                    if(type === 'display'){
-                                                        data = `<span  type="button" style="cursor:pointer"type="submit" onclick="detail_thn('${data}','${div}'); return true" target="_blank">${data}</span>`;
-                                                        }
-                                                    return data;
-                                                }},
-                                                { 'data': 'kategory' },
-                                                { 'data': 'divisi' },
-                                                {
-                                                data: 'target',render: $.fn.dataTable.render.number(',', '.', 0, '')
-                                                },
-                                                {
-                                                    data: 'upload',
-                                                    "render":function(data,type,row,metal){
-                                                                        let thn = row.tahun;
-                                                                        let ktg = row.kategory;
-                                                                        let div = row.divisi;
-                                                                        if(type === 'display'){
-                                                                            data = `<span  type="button" style="cursor:pointer"type="submit" onclick="detail_div('${thn}','${ktg}','${div}'); return true" target="_blank">${data}</span>`;
-                                                                        }
-                                                                        return data
-                                                                    },
-                                                    },
-                                                {
-                                                data: 'tidak_target', render: $.fn.dataTable.render.number(',', '.', 0, '')
-                                                },
-                                            
-                                            ]      
-                                
-                            });
-                            
-                        
-                        }
-                    });  
+                    
              
     });
 //end filter data 
@@ -428,6 +348,45 @@ function get_divisi_all(tahun,bulan,div){
                         }
                     
                     },
+                         columnDefs: [
+                                                {
+                                                targets: 0,         // kolom ke-0
+                                                width: '2px',
+                                                className: 'text-start'   // rata kiri
+                                               // className: 'text-center' // posisi teks ke tengah
+                                                },
+                                                {
+                                                targets: 1,         // kolom ke-0
+                                                width: '5px',
+                                                className: 'text-start'   // rata kiri
+                                               // className: 'text-center' // posisi teks ke tengah
+                                                },
+                                                 {
+                                                targets: 2,         // kolom ke-0
+                                                width: '5px',
+                                                className: 'text-start'   // rata kiri
+                                               // className: 'text-center' // posisi teks ke tengah
+                                                },
+                                                {
+                                                targets: 3,         // kolom ke-0
+                                                width: '10px',
+                                                className: 'text-end'   // rata kiri
+                                               // className: 'text-center' // posisi teks ke tengah
+                                                },
+                                                   {
+                                                targets: 4,         // kolom ke-0
+                                                width: '10px',
+                                                className: 'text-end'   // rata kiri
+                                               // className: 'text-center' // posisi teks ke tengah
+                                                },
+                                                {
+                                                targets:5,         // kolom ke-0
+                                                width: '10px',
+                                                className: 'text-end'   // rata kiri
+                                               // className: 'text-center' // posisi teks ke tengah
+                                                },
+                                           
+                            ],
                             columns: [
                                 
                                 { 'data': 'tahun',"render":function(data,type,row,metal){
@@ -470,6 +429,7 @@ function get_divisi_all(tahun,bulan,div){
 }; 
 
 function get_tables_all(tahun,div){
+        
         let dataTable =`
         <section class="section">
                 <div class="card">
@@ -517,9 +477,9 @@ function head_thndetail(tahun){
                                                 <th style="width:5%">Bulan</th>
                                                 <th style="width:5%">Kategori</th>
                                                 <th style="width:5%">Divisi</th>
-                                                <th style="width:5%">Target</th>
-                                                <th style="width:5%">Upload</th>
-                                                <th style="width:5%">Tidak Target</th>
+                                                <th style="width:5%" classt="text-end">Target</th>
+                                                <th style="width:5%" classt="text-end">Upload</th>
+                                                <th style="width:5%" classt="text-end">Tidak Target</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -541,20 +501,20 @@ function get_tables_detail_all(kategory){
                    
                         <div class="card-body">
                         <button onclick="goBack2()" class="btn btn-lg mb-2"><i class="fa-solid fa-arrow-left"></i></button>
-                        <h6 class="text-center">${kategory}</h6>
+                        <h6 class="text-center">${kategory} </h6>
                 
                         <table id="tabel_detail_all" style="width:100%" class='display table-info'>                    
                                         <thead  id='thead'class ='thead'>
                                         <tr>
-                                                    <th style="width:8%">Tanggal</th>
-                                                    <th style="width:5%">Divisi</th>
-                                                    <th style="width:5%">Kode</th>
-                                                    <th style="width:35%">Judul</th>
-                                                    <th style="width:30%">Tujuan</th>
-                                                    <th style="width:3%">Link</th>
-                                                    <th>Nama File</th>
-                                                    <th>Size</th>
-                                                    <th>Play</th>
+                                                    <th style="width:10%">Tanggal</th>
+                                                    <th style="width:10%">Divisi</th>
+                                                    <th style="width:11%">Kode</th>
+                                                    <th style="width:13%">Judul</th>
+                                                    <th style="width:11%">Tujuan</th>
+                                                    <th style="width:10%">Link</th>
+                                                    <th style="width:13%">Nama File</th>
+                                                    <th style="width:11%">Size</th>
+                                                    <th style="width:11%">Play</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -799,6 +759,7 @@ function detail_thn(data,div){
 
 //onclick detail tampildata  where divisi
  function detail_div(tahun,ktg,div){
+       
             let formData = new FormData();
                 formData.append('tahun', tahun);
                 formData.append('kategory', ktg);

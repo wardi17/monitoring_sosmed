@@ -15,16 +15,13 @@
 
 if($divisi == "All"){
   $query ="SELECT * FROM transaksi_video_upload WHERE  YEAR(tanggal)='".$tahun."'  AND kategory ='".$kategory."' ORDER BY tanggal";
-  $result2 = odbc_exec($connection,$query);
-}
-elseif($divisi == "CS"){
+
+}else{
   $query ="SELECT * FROM transaksi_video_upload WHERE  YEAR(tanggal)='".$tahun."'  AND kategory ='".$kategory."'AND divisi ='".$divisi."' ORDER BY tanggal";
-  $result2 = odbc_exec($connection,$query);
 }
-elseif($divisi == "PD3R"){
-  $query ="SELECT * FROM transaksi_video_upload WHERE  YEAR(tanggal)='".$tahun."'  AND kategory ='".$kategory."'AND divisi ='".$divisi."' ORDER BY tanggal";
-  $result2 = odbc_exec($connection,$query);
-}
+
+//die(var_dump($query));
+ $result2 = odbc_exec($connection,$query);
     $datas =[];
     while(odbc_fetch_row($result2)){
 

@@ -79,6 +79,119 @@
      
  /* end tabel comment */
  
+
+ /* Video Styling */
+#video2 {
+    width: 100px !important;
+    height: 100px !important;
+    cursor: pointer;
+    transition: 0.3s;
+    object-fit: cover;
+    display: block;
+}
+
+video:hover {
+    transform: scale(1.1);
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height:100%;
+    max-width: 800px;
+    background: black;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+.modal video {
+    width: 100%;
+    height: 100%;
+    max-height: 80vh;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Overlay Styling */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+
+.overlay.show {
+    display: block;
+}
+
+/* Modal Content Styling */
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: black;
+    padding: 10px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    text-align: center;
+}
+
+/* Close Button Styling */
+.close {
+    float: right;
+    top: 20px;
+    right: 15px;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+    text-shadow: 0px 0px 10px rgba(248, 241, 241, 0.7);
+}
+
+.close:hover {
+    color: red;
+    text-shadow: 0px 0px 10px rgba(255, 0, 0, 0.7);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+    }
+    .modal video {
+        max-height: 70vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        width: 100%;
+        border-radius: 0;
+    }
+    .modal video {
+        max-height: 65vh;
+    }
+}
 </style>
   
 
@@ -94,6 +207,20 @@
           require_once ("models/dahasboard/tampildata.php");
           ?>
         
+     <!-- Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <div>
+            <span class="close" onclick="closeModal()">&times;</span> 
+            </div>
+            <div class="modal-body">
+                <video id="modalVideo" controls>
+                        <source id="modalSource" src="" type="video/mp4">
+                    </video>
+            </div>
+                <!-- <span class="close" onclick="closeModal()">&times;</span> -->
+            </div>
+      </div>
 
     <div class="page-content">
         <section class="row">
@@ -777,7 +904,10 @@ function get_tables_detail(kategory){
                                                     <th>Kode</th>
                                                     <th>Judul</th>
                                                     <th>Tujuan</th>
-                                                    <th>Link</th>   
+                                                    <th>Link</th>
+                                                    <th style="width:13%">Nama File</th>
+                                                    <th style="width:11%">Size</th>
+                                                    <th style="width:11%">Play</th>   
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -888,6 +1018,7 @@ function detail_thn(data,div){
                 contentType: false,
                 dataType:'json',
                     success:function(result){
+                 
                         get_tables_detail(ktg);
                         $("#tabeldetail").show();
                         $("#header_data").hide();
@@ -931,6 +1062,23 @@ function detail_thn(data,div){
                                                     return data;
                                                 }
                                                 },
+                                                { 'data': 'nama_document'},
+                                                { 'data' :'ukuran_file'},
+                                                {
+                                                data: function(row, type, val, meta) {
+
+                                                    const nama_document = row.nama_document;
+                                                    const url = "<?= url_store ?>"+nama_document;
+
+                                                
+                                                    return `
+                                                    <video id="video2" width="200" onclick="openModal('${url}')">
+                                                        <source src="${url}" type="video/mp4">
+                                                        Browser Anda tidak mendukung tag video.
+                                                    </video>
+                                                    `;
+                                                }
+                                                }
 
                                             
                                             ]      
@@ -939,6 +1087,26 @@ function detail_thn(data,div){
                     }
             });
  }
+
+
+ function openModal(videoSrc) {
+            let modal = document.getElementById("videoModal");
+            let modalVideo = document.getElementById("modalVideo");
+            let modalSource = document.getElementById("modalSource");
+
+            modalSource.src = videoSrc; // Set video src
+            modalVideo.load(); // Reload video untuk memuat source baru
+            modal.style.display = "block";
+            modalVideo.play(); // Putar video otomatis
+        }
+
+           function closeModal() {
+            let modalVideo = document.getElementById("modalVideo");
+           
+            modalVideo.pause(); // Pause video saat modal ditutup
+            modalVideo.currentTime = 0;  
+            $("#videoModal").fadeOut();
+        }
 </script> 
 
 
